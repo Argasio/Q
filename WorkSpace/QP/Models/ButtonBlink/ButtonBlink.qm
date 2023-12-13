@@ -96,7 +96,7 @@ $define${AOs::ButtonBlink}
 #define AO_BLINKBUTTON_H
 #include &quot;LedHandler.hpp&quot;
 #include &quot;qpcpp.hpp&quot; // QP/C++ framework API
-#include &quot;BSP_Init.hpp&quot;
+#include &quot;Signals.hpp&quot;
 #include &quot;BSP_QP.hpp&quot;
 ///@brief init struct for button blink AO
 typedef struct ButtonBlinkInit_t

@@ -32,7 +32,7 @@
 #define AO_BLINKBUTTON_H
 #include "LedHandler.hpp"
 #include "qpcpp.hpp" // QP/C++ framework API
-#include "BSP_Init.hpp"
+#include "Signals.hpp"
 #include "BSP_QP.hpp"
 ///@brief init struct for button blink AO
 typedef struct ButtonBlinkInit_t

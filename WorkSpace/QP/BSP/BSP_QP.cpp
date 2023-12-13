@@ -8,7 +8,7 @@
 
 
 #include "BSP_QP.hpp"
-#include "qpcpp.hpp"             // QP/C++ real-time embedded framework
+
 #include <cstdint>
 
 Q_DEFINE_THIS_FILE
@@ -83,7 +83,7 @@ void SysTick_Handler(void) {
 } // extern "C"
 
 
-void QP_Init()
+void QS_Init()
 {
 #ifdef Q_SPY
     if (QS_INIT(nullptr) == 0U) { // initialize the QS software tracing
@@ -92,8 +92,9 @@ void QP_Init()
     QS_GLB_FILTER(QP::QS_SM_RECORDS); // state machine records
     QS_GLB_FILTER(QP::QS_AO_RECORDS); // active object records
     QS_GLB_FILTER(QP::QS_UA_RECORDS); // all user records
-#endif
+
     HAL_UART_Receive_IT(QS_uart_p, &QP::QS_Rx_Buffer, 1); // start receive
+#endif
 }
 
 void handleQSRxCallback(){

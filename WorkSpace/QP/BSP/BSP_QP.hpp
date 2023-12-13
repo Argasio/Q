@@ -8,6 +8,8 @@
 
 
 
+
+#include "qpcpp.hpp"             // QP/C++ real-time embedded framework
 #include "BSP_Peripheral_Handles.h"
 
 #ifndef QP_BSP_HPP_
@@ -20,7 +22,7 @@ extern "C" {
 
 
 
-void  QP_Init();
+void  QS_Init();
 void handleQSRxCallback();
 void SysTick_Handler(void); // prototype
 

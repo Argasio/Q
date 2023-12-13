@@ -5,7 +5,7 @@
  *      Author: A409296
  */
 
-#include <MCAL_Gpio.h>
+#include <MCAL_Gpio.hpp>
 
 namespace MCAL {
 
