@@ -8,31 +8,39 @@
 
 
 #include "BSP_QP.hpp"
-
+#include "Signals.hpp"
 #include <cstdint>
 
 Q_DEFINE_THIS_FILE
 
-extern "C" {
-
-namespace QP {
-
+//--------------QSPY global variables---------------------------------------------//
 #ifdef Q_SPY
 
-    // QSpy source IDs
-    static QP::QSpyId const l_SysTick_Handler = { 0U };
-    static QP::QSpyId const l_GPIO_EVEN_IRQHandler = { 0U };
-    unsigned char QS_Rx_Buffer = 0;
+// QSpy source IDs
+static QP::QSpyId const l_SysTick_Handler = { 0U };
+static QP::QSpyId const l_GPIO_EVEN_IRQHandler = { 0U };
+unsigned char QS_Rx_Buffer = 0;
 
-    static QP::QSTimeCtr QS_tickTime_;
-    static QP::QSTimeCtr QS_tickPeriod_;
+static QP::QSTimeCtr QS_tickTime_;
+static QP::QSTimeCtr QS_tickPeriod_;
 
-#endif
+inline void produceSigDict() {
+
+	QS_SIG_DICTIONARY(APP::TIMEOUT_SIG, nullptr);
 
 }
 
+#endif
+//...............................................................................//
+
+extern "C" {
 
 
+/**
+ * @brief QP on error callback
+ * @param module
+ * @param id
+ */
 Q_NORETURN Q_onError(char const * const module, int_t const id) {
     // NOTE: this implementation of the assertion handler is intended only
     // for debugging and MUST be changed for deployment of the application
@@ -61,19 +69,27 @@ void assert_failed(char const * const module, int_t const id) {
 }
 
 // ISRs used in the application ==============================================
-
-void SysTick_Handler(void) {
-
+/**
+ * @brief implementation of the systick handler isr, it used to keep the framework time stamp and events
+ */
+void SysTick_Handler(void)
+{
+	// STM32 HAL timebase
 	HAL_IncTick();
-
-	QK_ISR_ENTRY();   // inform QK about entering an ISR
-
-	QP::QTimeEvt::TICK_X(0U, nullptr); // process time events at rate 0
+	//----->QP related Systick operations<------//
+	// inform QK about entering an ISR
+	QK_ISR_ENTRY();
+	// process time events at rate 0
+	QP::QTimeEvt::TICK_X(0U, nullptr);
 	QK_ARM_ERRATUM_838869();
-
-	std::uint32_t tmp = SysTick->CTRL; // clear CTRL_COUNTFLAG
-	QP::QS_tickTime_ += QP::QS_tickPeriod_; // account for the clock rollover
-	QK_ISR_EXIT();  // inform QK about exiting an ISR
+	// clear CTRL_COUNTFLAG
+	std::uint32_t tmp = SysTick->CTRL;
+#ifdef QSPY
+	// account for the clock rollover
+	QS_tickTime_ += QS_tickPeriod_;
+#endif
+	// inform QK about exiting an ISR
+	QK_ISR_EXIT();
 
 
 }
@@ -83,9 +99,15 @@ void SysTick_Handler(void) {
 } // extern "C"
 
 
+/**
+ * @brief initialize QSPY related hardware functions and filters
+ */
 void QS_Init()
 {
 #ifdef Q_SPY
+	QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+	produceSigDict();
+
     if (QS_INIT(nullptr) == 0U) { // initialize the QS software tracing
         Q_ERROR();
     }
@@ -93,23 +115,30 @@ void QS_Init()
     QS_GLB_FILTER(QP::QS_AO_RECORDS); // active object records
     QS_GLB_FILTER(QP::QS_UA_RECORDS); // all user records
 
-    HAL_UART_Receive_IT(QS_uart_p, &QP::QS_Rx_Buffer, 1); // start receive
+    HAL_UART_Receive_IT(QS_uart_p, &QS_Rx_Buffer, 1); // start receive
 #endif
 }
 
+/**
+ * @brief prosecution of the uart rx interrupt addressed to qspy incoming communications
+ */
 void handleQSRxCallback(){
-    QP::QS::rxPut(QP::QS_Rx_Buffer);
+#ifdef Q_SPY
+    QP::QS::rxPut(QS_Rx_Buffer);
 
-    HAL_UART_Receive_IT(QS_uart_p, &QP::QS_Rx_Buffer, 1);
+    HAL_UART_Receive_IT(QS_uart_p, &QS_Rx_Buffer, 1);
 
     QK_ARM_ERRATUM_838869();
+#endif
 }
 
 
 namespace QP {
 
 
-// QF callbacks...
+/**
+ * @brief QP callback called by the QP framework on its startup
+ */
 void QF::onStartup() {
     // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
     SysTick_Config(SystemCoreClock / BSP::TICKS_PER_SEC);
@@ -123,20 +152,33 @@ void QF::onStartup() {
 
 }
 //............................................................................
+/**
+ * @brief QP callback called by the QP framework on its shut down
+ */
 void QF::onCleanup() {
 }
 //............................................................................
+/**
+ * @brief QP callback called by the QP framework when no AO is active
+ * it is mainly used to deliver QSPY traces and to collect incoming qspy commands
+ */
 void QK::onIdle() {
 
     // toggle LED2 on and then off, see NOTE01
 #ifdef Q_SPY
-    QS::rxParse();  // parse all the received bytes
-
+	QF_INT_DISABLE();
+	// parse all the received bytes
+    QS::rxParse();
+    QF_INT_ENABLE();
+    QF_CRIT_EXIT_NOP();
     uint16_t b = 0;
     uint8_t dataBuffer[4000] = {0};
     uint16_t index = 0;
     QF_INT_DISABLE();
-    //
+    while(HAL_UART_GetState(QS_uart_p))
+	{
+
+	}
     while ((b = QS::getByte()) != QS_EOD) { // while not End-Of-Data...
         QF_INT_ENABLE();
         dataBuffer[index] = b;
@@ -179,6 +221,11 @@ void QK::onIdle() {
 namespace QS {
 
 //............................................................................
+/**
+ * @brief Qspy callback called by the framework upon qpsy initialization
+ * @param arg
+ * @return
+ */
 bool onStartup(void const *arg) {
     static uint8_t qsBuf[2*1024]; // buffer for Quantum Spy
     static uint8_t qsRxBuf[128];  /* buffer for QS-RX channel */
@@ -188,26 +235,35 @@ bool onStartup(void const *arg) {
 
 
 
-    QP::QS_tickPeriod_ = SystemCoreClock / BSP::TICKS_PER_SEC;
-    QP::QS_tickTime_ = QP::QS_tickPeriod_; // to start the timestamp at zero
+    QS_tickPeriod_ = SystemCoreClock / BSP::TICKS_PER_SEC;
+    QS_tickTime_ = QS_tickPeriod_; // to start the timestamp at zero
 
     return true; // return success
 }
 //............................................................................
+/**
+ * @brief QP framework callback called when qspy is de initialized
+ */
 void onCleanup() {
 }
 //............................................................................
+/**
+ * @brief QP callback to update the qspy timestamp
+ * @return time value
+ */
 QSTimeCtr onGetTime() { // NOTE: invoked with interrupts DISABLED
     if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0) { // not set?
-        return QP::QS_tickTime_ - static_cast<QSTimeCtr>(SysTick->VAL);
+        return QS_tickTime_ - static_cast<QSTimeCtr>(SysTick->VAL);
     }
     else { // the rollover occured, but the SysTick_ISR did not run yet
-        return QP::QS_tickTime_ + QP::QS_tickPeriod_
+        return QS_tickTime_ + QS_tickPeriod_
                - static_cast<QSTimeCtr>(SysTick->VAL);
     }
 }
 //............................................................................
-// flush the trace buffer to the host
+/**
+ * @brief used to dump the collected traces to the host at once
+ */
 void onFlush()
 {
     uint16_t b = 0;
@@ -226,12 +282,20 @@ void onFlush()
 
 }
 //............................................................................
-//! callback function to reset the target (to be implemented in the BSP)
+/**
+ * @brief callback function to reset the target (to be implemented in the BSP)
+ */
 void onReset() {
     NVIC_SystemReset();
 }
 //............................................................................
-// callback function to execute a user command
+/**
+ * @brief callback to process custom QSPY input commands
+ * @param cmdId
+ * @param param1
+ * @param param2
+ * @param param3
+ */
 void onCommand(std::uint8_t cmdId, std::uint32_t param1,
                std::uint32_t param2, std::uint32_t param3)
 {
