@@ -24,6 +24,8 @@ extern "C" {
 
 void  QS_Init();
 void handleQSRxCallback();
+void handleQSTxCallback();
+void handleQSError();
 void SysTick_Handler(void); // prototype
 
 

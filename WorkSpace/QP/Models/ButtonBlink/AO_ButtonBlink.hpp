@@ -34,6 +34,7 @@
 #include "qpcpp.hpp" // QP/C++ framework API
 #include "Signals.hpp"
 #include "BSP_QP.hpp"
+
 ///@brief init struct for button blink AO
 typedef struct ButtonBlinkInit_t
 {

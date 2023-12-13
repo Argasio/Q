@@ -9,6 +9,7 @@
 
 #include "BSP_QP.hpp"
 #include "Signals.hpp"
+#include "Modules.h"
 #include <cstdint>
 
 Q_DEFINE_THIS_FILE
@@ -23,6 +24,9 @@ unsigned char QS_Rx_Buffer = 0;
 
 static QP::QSTimeCtr QS_tickTime_;
 static QP::QSTimeCtr QS_tickPeriod_;
+static volatile uint8_t QS_txInProgressFlag = 0;
+
+
 
 inline void produceSigDict() {
 
@@ -105,12 +109,16 @@ void SysTick_Handler(void)
 void QS_Init()
 {
 #ifdef Q_SPY
-	QS_OBJ_DICTIONARY(&l_SysTick_Handler);
-	produceSigDict();
-
     if (QS_INIT(nullptr) == 0U) { // initialize the QS software tracing
         Q_ERROR();
     }
+
+	QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+	QS_USR_DICTIONARY(QS_MODULE_BUTTON_BLINK);
+
+	produceSigDict();
+
+
     QS_GLB_FILTER(QP::QS_SM_RECORDS); // state machine records
     QS_GLB_FILTER(QP::QS_AO_RECORDS); // active object records
     QS_GLB_FILTER(QP::QS_UA_RECORDS); // all user records
@@ -132,6 +140,27 @@ void handleQSRxCallback(){
 #endif
 }
 
+/**
+ * @brief prosecution of the uart tx interrupt addressed to qspy incoming communications
+ */
+void handleQSTxCallback(){
+#ifdef Q_SPY
+	QS_txInProgressFlag = 0;
+	QK_ARM_ERRATUM_838869();
+#endif
+}
+
+/**
+ * @brief prosecution of the uart error for qspy comms
+ */
+void handleQSError(){
+#ifdef Q_SPY
+	QP::QS::rxPut(QS_Rx_Buffer);
+	HAL_UART_Receive_IT(QS_uart_p, &QS_Rx_Buffer, 1);
+	QK_ARM_ERRATUM_838869();
+#endif
+}
+
 
 namespace QP {
 
@@ -148,8 +177,9 @@ void QF::onStartup() {
 
     // set priorities of ALL ISRs used in the system, see NOTE00
     NVIC_SetPriority(SysTick_IRQn,  QF_AWARE_ISR_CMSIS_PRI);
+    NVIC_SetPriority(USART3_IRQn,  QF_AWARE_ISR_CMSIS_PRI);
     // ...
-
+    NVIC_EnableIRQ(USART3_IRQn);
 }
 //............................................................................
 /**
@@ -167,26 +197,41 @@ void QK::onIdle() {
     // toggle LED2 on and then off, see NOTE01
 #ifdef Q_SPY
 	QF_INT_DISABLE();
+    QF_MEM_SYS();
 	// parse all the received bytes
     QS::rxParse();
+    QF_MEM_APP();
     QF_INT_ENABLE();
     QF_CRIT_EXIT_NOP();
-    uint16_t b = 0;
-    uint8_t dataBuffer[4000] = {0};
-    uint16_t index = 0;
-    QF_INT_DISABLE();
-    while(HAL_UART_GetState(QS_uart_p))
-	{
+    if(QS_txInProgressFlag == 0)
+    {
 
-	}
-    while ((b = QS::getByte()) != QS_EOD) { // while not End-Of-Data...
-        QF_INT_ENABLE();
-        dataBuffer[index] = b;
-        index++;
-        QF_INT_DISABLE();
+		uint16_t b = 0;
+		static uint8_t dataBuffer[4000] = {0};
+		uint16_t index = 0;
+		QF_INT_DISABLE();
+		QF_MEM_SYS();
+
+		while(0 == (HAL_UART_GetState(QS_uart_p) & HAL_UART_STATE_BUSY_TX))
+		{
+
+		}
+		while ((b = QS::getByte()) != QS_EOD) { // while not End-Of-Data...
+			QF_INT_ENABLE();
+			dataBuffer[index] = b;
+			index++;
+			QF_INT_DISABLE();
+		}
+		HAL_StatusTypeDef res = HAL_UART_Transmit_IT(QS_uart_p, dataBuffer, index);
+		if(res == HAL_OK)
+		{
+			QS_txInProgressFlag = 1;
+		}
+		QF_MEM_APP();
+		QF_INT_ENABLE();
+
     }
-    QF_INT_ENABLE();
-    HAL_UART_Transmit(QS_uart_p, dataBuffer, index, 100);
+
 #elif defined NDEBUG
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,

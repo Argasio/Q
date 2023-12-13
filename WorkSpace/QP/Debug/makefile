@@ -84,8 +84,8 @@ all: main-build
 main-build: QP.elf secondary-outputs
 
 # Tool invocations
-QP.elf QP.map: $(OBJS) $(USER_OBJS) C:\Repos\Q_\WorkSpace\QP\STM32H563ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "QP.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"C:\Repos\Q_\WorkSpace\QP\STM32H563ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="QP.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+QP.elf QP.map: $(OBJS) $(USER_OBJS) C:\Repos\Q\WorkSpace\QP\STM32H563ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "QP.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"C:\Repos\Q\WorkSpace\QP\STM32H563ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="QP.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

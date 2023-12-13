@@ -28,10 +28,13 @@
 // <info@state-machine.com>
 //
 //$endhead${.::AO_ButtonBlink.cpp} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+#include "Qp_Tracer.h"
 #include "AO_ButtonBlink.hpp"
+#include "Modules.h"
 using namespace QP;
+// use app as ao namespace
 using namespace APP;
+
 
 
 // opaque pointer to the Blinky active object --------------------------------
@@ -75,6 +78,7 @@ Q_STATE_DEF(ButtonBlink, off) {
     switch (e->sig) {
         //${AOs::ButtonBlink::SM::off}
         case Q_ENTRY_SIG: {
+            TRACE_BUTTON_BLINK("EnterOff");
             init.ledHandler->LedControl(LedHandler::Colors_t::Red, 0);
             status_ = Q_RET_HANDLED;
             break;
@@ -98,6 +102,7 @@ Q_STATE_DEF(ButtonBlink, on) {
     switch (e->sig) {
         //${AOs::ButtonBlink::SM::on}
         case Q_ENTRY_SIG: {
+            TRACE("EnterOn");
             init.ledHandler->LedControl(LedHandler::Colors_t::Red, 1);
             status_ = Q_RET_HANDLED;
             break;

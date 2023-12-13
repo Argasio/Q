@@ -51,7 +51,8 @@ m_timeEvt.armX( BSP::TICKS_PER_SEC,
      </initial_glyph>
     </initial>
     <state name="off">
-     <entry>init.ledHandler-&gt;LedControl(LedHandler::Colors_t::Red, 0);</entry>
+     <entry>TRACE_BUTTON_BLINK(&quot;EnterOff&quot;);
+init.ledHandler-&gt;LedControl(LedHandler::Colors_t::Red, 0);</entry>
      <tran trig="TIMEOUT" target="../../2">
       <tran_glyph conn="2,15,3,1,18,7,-2">
        <action box="0,-2,8,2"/>
@@ -62,7 +63,8 @@ m_timeEvt.armX( BSP::TICKS_PER_SEC,
      </state_glyph>
     </state>
     <state name="on">
-     <entry>init.ledHandler-&gt;LedControl(LedHandler::Colors_t::Red, 1);</entry>
+     <entry>TRACE(&quot;EnterOn&quot;);
+init.ledHandler-&gt;LedControl(LedHandler::Colors_t::Red, 1);</entry>
      <tran trig="TIMEOUT" target="../../1">
       <tran_glyph conn="2,30,3,1,20,-19,-4">
        <action box="0,-2,8,2"/>
@@ -81,10 +83,13 @@ m_timeEvt.armX( BSP::TICKS_PER_SEC,
  </package>
  <directory name=".">
   <file name="AO_ButtonBlink.cpp">
-   <text>
+   <text>#include &quot;Qp_Tracer.h&quot;
 #include &quot;AO_ButtonBlink.hpp&quot;
+#include &quot;Modules.h&quot;
 using namespace QP;
+// use app as ao namespace
 using namespace APP;
+
 
 
 // opaque pointer to the Blinky active object --------------------------------
@@ -98,6 +103,7 @@ $define${AOs::ButtonBlink}
 #include &quot;qpcpp.hpp&quot; // QP/C++ framework API
 #include &quot;Signals.hpp&quot;
 #include &quot;BSP_QP.hpp&quot;
+
 ///@brief init struct for button blink AO
 typedef struct ButtonBlinkInit_t
 {
