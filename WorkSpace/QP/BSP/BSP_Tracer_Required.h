@@ -9,12 +9,16 @@
 #define BSP_TRACER_REQUIRED_H_
 
 
-#include "BSP_Peripheral_Handles.h"
 
+#include "BSP_Peripheral_Handles.h"
+#include "qpcpp.hpp"
+#include "Modules.h"
 #define TRACER_USE_UART 0
 #define TRACER_USE_SWO 1
 #define TRACER_OUTPUT_CHANNEL TRACER_USE_SWO
 #define TERM_TIMESTAMP 1
+#define TRACER_LABEL_TABLE Modules_NamesTable
+#define TRACER_USE_QSPY 1
 //
 //
 //#ifdef Q_SPY
@@ -36,5 +40,7 @@
 //#define TRACE_THIS(format, ...) ((void)0)
 //
 //#endif
+
+
 
 #endif /* BSP_TRACER_REQUIRED_H_ */

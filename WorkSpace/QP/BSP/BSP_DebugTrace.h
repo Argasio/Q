@@ -13,6 +13,10 @@
 
 
 #if defined(Q_SPY) && (USE_TRACER)
+#if TRACER_USE_QSPY
+#	define TRACE(format, ...)  					TracerPrint( format, ##__VA_ARGS__)
+#	define TRACE_MODULE(module, format, ...)    TracerPrintWithLabel((module), format, ##__VA_ARGS__)
+#else
 #	define TRACE(format, ...) \
        do{\
 		   InterfaceTrace(format, ##__VA_ARGS__);\
@@ -22,8 +26,9 @@
 #	define TRACE_MODULE(module, format, ...)  \
        do{\
 		   InterfaceTraceModule((QS_MODULES_START+module), format, ##__VA_ARGS__);\
-		   TracerPrintWithLabel((const char*)(Modules_NamesTable[module]), format, ##__VA_ARGS__);\
+		   TracerPrintWithLabel((module), format, ##__VA_ARGS__);\
        }while(0)
+#endif
 
 #elif defined(Q_SPY)
 /// @def Utility for sending debug trace messages anywhere in the application

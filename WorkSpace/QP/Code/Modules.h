@@ -3,6 +3,7 @@
  *
  *  Created on: Dec 13, 2023
  *      Author: A409296
+ *      @Note: this file must be included always after qpcpp.hpp
  */
 
 #ifndef MODULES_H_

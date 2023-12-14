@@ -18,13 +18,12 @@
 #ifndef UTILS_TRACER_H_
 #define UTILS_TRACER_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <BSP_ConditionalCompile.h>
+#include "BSP_Tracer_Required.h"
 
 #if COMPILE_MODULE_TRACER
 
@@ -33,7 +32,20 @@ extern "C" {
 #define   TRACER_UARTOUTPUTMETHOD_IRQ       (2) ///< default uart transmission interrupt based
 #define   TRACER_UARTOUTPUTMETHOD_DMA       (3) ///< default uart transmission dma-interrupt based
 
+#ifndef TRACER_LABEL_TABLE
+#	error Create Label table
+#endif
 
+#if defined(TRACER_USE_QSPY) && TRACER_USE_QSPY && TERM_TIMESTAMP
+
+#undef	TERM_TIMESTAMP
+#define TERM_TIMESTAMP 0
+
+#endif
+
+#ifndef USE_QSPY
+#	define USE_QSPY 0
+#endif
 ///@brief maximum trace bytes
 #ifndef TRACER_MAX_BUFFER_SIZE
 #	define TRACER_MAX_BUFFER_SIZE 85
@@ -63,7 +75,7 @@ uint32_t TracerPrint(const char * format, ...);
 ///@brief trace basic print function, not timestamp added
 uint32_t TracerPrintNoTs(const char * format,...);
 ///@brief trace basic print function, with a label added
-uint32_t TracerPrintWithLabel(const char * label, const char * format,...);
+uint32_t TracerPrintWithLabel(int32_t labelIndex, const char * format,...);
 ///@brief this function flushes the tracer pending traces and outputs them directly, to be used by asserts or hardfaults
 void TracerDump();
 ///@brief uart interrupt callback used by the trace uart
@@ -75,9 +87,7 @@ void    TRACER_waitForStart(void);
 
 #endif // compile barrier
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+
 
 #endif
 

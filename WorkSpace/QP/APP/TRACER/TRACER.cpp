@@ -16,7 +16,6 @@
   */
 
 #include "TRACER.h"
-#include "BSP_Tracer_Required.h"
 #include <BSP_ConditionalCompile.h>
 #if COMPILE_MODULE_TRACER
 #include "string.h"
@@ -390,7 +389,7 @@ void TracerDump()
 *@param format options
 *@return how many bytes were sent to be transmitted
 */
-uint32_t TracerPrintGeneral(const char * label, bool timeStampEnable,  const char * format,va_list args)
+uint32_t TracerPrintGeneral(int32_t labelIndex, bool timeStampEnable,  const char * format,va_list args)
 {
     TracerMsg_t traceMsg = {{0},0};
     // do we need a timestamp?
@@ -401,13 +400,17 @@ uint32_t TracerPrintGeneral(const char * label, bool timeStampEnable,  const cha
     	traceMsg.len += TracerInsertTimestamp((char*) &traceMsg.buffer[0], sizeof(traceMsg.buffer));
     }
 #endif
+
+#if TRACER_USE_QSPY == 0
+    char* label = &TRACER_LABEL_TABLE[labelIndex][0];
     // is there a label to print before the trace?
-    if(label != NULL){
+    if(label >=0){
         strncat((char*) &traceMsg.buffer[traceMsg.len], label, sizeof(traceMsg.buffer));
         traceMsg.len += strlen(label);
         traceMsg.buffer[traceMsg.len] = ' ';
         traceMsg.len++;
     }
+#endif
     // format the string
     va_list args_2;
     va_copy(args_2, args);
@@ -433,6 +436,11 @@ uint32_t TracerPrintGeneral(const char * label, bool timeStampEnable,  const cha
 
 #elif USE_SYSTEMVIEW
     SEGGER_SYSVIEW_VPrintfTargetEx(format, 0 , &args_2);
+#elif TRACER_USE_QSPY
+    // Send String using QSPY User level 0 interface layer message
+    QS_BEGIN_ID(QS_MODULES_START+labelIndex, 0U)
+    QS_STR(reinterpret_cast<const char*>(traceMsg.buffer));
+    QS_END()
 #endif
 
     va_end(args_2);
@@ -513,7 +521,7 @@ uint32_t TracerPrint(const char * format, ...)
 {
     va_list args;
     va_start(args,format);
-    uint32_t lengthPrinted = TracerPrintGeneral(NULL, true, format, args);
+    uint32_t lengthPrinted = TracerPrintGeneral(-1, true, format, args);
     va_end(args);
     return lengthPrinted;
 }
@@ -526,7 +534,7 @@ uint32_t TracerPrintNoTs(const char * format,...)
 {
     va_list args;
     va_start(args,format);
-    uint32_t lengthPrinted = TracerPrintGeneral(NULL, false, format, args);
+    uint32_t lengthPrinted = TracerPrintGeneral(-1, false, format, args);
     va_end(args);
     return lengthPrinted;
 }
@@ -536,11 +544,11 @@ uint32_t TracerPrintNoTs(const char * format,...)
 *@param label
 *@param format options
 */
-uint32_t TracerPrintWithLabel(const char * label, const char * format,...)
+uint32_t TracerPrintWithLabel(int32_t labelIndex, const char * format,...)
 {
     va_list args;
     va_start(args,format);
-    uint32_t lengthPrinted = TracerPrintGeneral(label, true, format, args);
+    uint32_t lengthPrinted = TracerPrintGeneral(labelIndex, true, format, args);
     va_end(args);
     return lengthPrinted;
 }
