@@ -40,6 +40,11 @@
 #ifndef QP_CONFIG_HPP_
 #define QP_CONFIG_HPP_
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+
 #define configMAX_PRIORITIES 5
 // NOTE:
 // The QP configuration takes effect only when the macro QP_CONFIG
@@ -50,6 +55,11 @@ namespace BSP{
 constexpr std::uint32_t TICKS_PER_SEC {1000U};
 }
 #define Q_SPY
+
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif // QP_CONFIG_HPP_
 

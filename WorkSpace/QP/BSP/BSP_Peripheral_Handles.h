@@ -13,6 +13,7 @@
 
 extern UART_HandleTypeDef huart3;
 #define QS_uart_p (&huart3)
+#define huartTrace (huart3)
 
 
 

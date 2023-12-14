@@ -20,6 +20,7 @@ RM := rm -rf
 -include Core/Src/subdir.mk
 -include Code/subdir.mk
 -include BSP/subdir.mk
+-include APP/TRACER/subdir.mk
 -include APP/subdir.mk
 -include objects.mk
 

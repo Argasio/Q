@@ -28,9 +28,11 @@
 // <info@state-machine.com>
 //
 //$endhead${.::AO_ButtonBlink.cpp} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#include "Qp_Tracer.h"
+
 #include "AO_ButtonBlink.hpp"
 #include "Modules.h"
+#include "BSP_DebugTrace.h"
+
 using namespace QP;
 // use app as ao namespace
 using namespace APP;

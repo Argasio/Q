@@ -8,8 +8,13 @@
 #ifndef BSP_TRACER_REQUIRED_H_
 #define BSP_TRACER_REQUIRED_H_
 
-#include "qp_config.hpp"
 
+#include "BSP_Peripheral_Handles.h"
+
+#define TRACER_USE_UART 0
+#define TRACER_USE_SWO 1
+#define TRACER_OUTPUT_CHANNEL TRACER_USE_SWO
+#define TERM_TIMESTAMP 1
 //
 //
 //#ifdef Q_SPY

@@ -39,6 +39,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Models/ButtonBlink&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/MCAL&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/MCAL/stm32h5xx&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/APP/TRACER&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/APP&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input.346356818" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input"/>
@@ -66,8 +67,10 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Models/ButtonBlink&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/MCAL&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/MCAL/stm32h5xx&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/APP/TRACER&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/APP&quot;"/>
 								</option>
+								<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.languagestandard.846651838" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.languagestandard" value="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.languagestandard.value.gnu99" valueType="enumerated"/>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.629306681" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
 							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.556212337" name="MCU G++ Compiler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler">
@@ -93,6 +96,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Models/ButtonBlink&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/MCAL&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/MCAL/stm32h5xx&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/APP/TRACER&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/APP&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.input.cpp.580937748" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.input.cpp"/>
@@ -243,5 +247,12 @@
 			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/QP"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/QP"/>
+		</configuration>
+	</storageModule>
 </cproject>

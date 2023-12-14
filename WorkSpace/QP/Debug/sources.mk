@@ -33,6 +33,7 @@ CPP_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 APP \
+APP/TRACER \
 BSP \
 Code \
 Core/Src \
