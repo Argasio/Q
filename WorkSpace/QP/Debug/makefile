@@ -13,6 +13,7 @@ RM := rm -rf
 -include ThirdParty/qpcpp/src/qk/subdir.mk
 -include ThirdParty/qpcpp/src/qf/subdir.mk
 -include ThirdParty/qpcpp/ports/arm-cm/qk/gnu/subdir.mk
+-include Models/ButtonPressHandler/subdir.mk
 -include Models/ButtonBlink/subdir.mk
 -include MCAL/stm32h5xx/subdir.mk
 -include Drivers/STM32H5xx_HAL_Driver/Src/subdir.mk

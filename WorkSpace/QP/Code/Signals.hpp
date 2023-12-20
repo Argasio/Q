@@ -20,6 +20,8 @@ enum Signals :QP::QSignal
     MAX_PUB_SIG,  // the last published signal
 
 	TIMEOUT_SIG,
+	BTN_PRESS_UP_SIG,
+	BTN_PRESS_DOWN_SIG,
     MAX_SIG       // the last signal
 };
 

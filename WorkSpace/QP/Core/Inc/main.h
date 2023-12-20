@@ -69,6 +69,7 @@ void Error_Handler(void);
 #define TRACE_D3_GPIO_Port GPIOE
 #define USER_BUTTON_Pin GPIO_PIN_13
 #define USER_BUTTON_GPIO_Port GPIOC
+#define USER_BUTTON_EXTI_IRQn EXTI13_IRQn
 #define LED2_YELLOW_Pin GPIO_PIN_4
 #define LED2_YELLOW_GPIO_Port GPIOF
 #define RMII_MDC_Pin GPIO_PIN_1

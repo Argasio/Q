@@ -11,13 +11,14 @@
 
 #include "Signals.hpp"
 #include "AO_ButtonBlink.hpp"
-
+#include "AO_ButtonPressHandler.hpp"
 enum AO_PRIORITIES{
     AO_LED_PRIO = 1u,
-    AO_BUTTON_PRIO,
+	AO_BTN_PRIO = 2u,
+    AO_PRIO_MAX
 };
 ButtonBlink* AO_GetButtonBlink();
-
+ButtonPressHandler* AO_GetButtonPressHandler();
 
 
 #endif /* BSP_AOFACTORY_HPP_ */

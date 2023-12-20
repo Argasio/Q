@@ -7,6 +7,7 @@
 
 #include "BSP_HandlerFactory.hpp"
 #include "BSP_AoFactory.hpp"
+#include "BSP_McalFactory.hpp"
 
 //--------------- AO FACTORY ------------------//
 ButtonBlink* AO_GetButtonBlink()
@@ -16,4 +17,13 @@ ButtonBlink* AO_GetButtonBlink()
 	buttonBlinkInit.ledHandler = ledHandler;
 	static ButtonBlink AO_buttonBlink(buttonBlinkInit);
 	return &AO_buttonBlink;
+}
+
+ButtonPressHandler* AO_GetButtonPressHandler()
+{
+
+	ButtonPressHandlerInit_t init;
+	init.pin = MCalGetGpio(Gpios::Btn_Usr);
+	static ButtonPressHandler AO_buttonPressHandler(init);
+	return &AO_buttonPressHandler;
 }

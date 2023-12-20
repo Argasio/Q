@@ -15,6 +15,7 @@ enum Gpios
 {
 	Led_Red,
 	Led_Green,
+	Btn_Usr
 };
 
 MCAL::iGpio*     MCalGetGpio(Gpios gpio);

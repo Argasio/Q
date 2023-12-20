@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="5.3.0" links="0">
+ <documentation>About this example:
+-------------------
+Simple &quot;Blinky&quot; console application for workstations (Windows, Linux, macOS)
+(see &quot;QM Tutorial&quot; at: https://www.state-machine.com/qm/gs_tut.html)
+
+This example demonstrates:
+- Active object (Blinky) with state machine
+- Board Support Package abstraction for portability
+- BSP implementation for desktop OS (Windows, Linux, MacOS)
+- Platform-independent main() function
+- Makefile to build the generated code on desktop OS (Windows, Linux, MacOS)
+- Customized tools for building the generated code directly from QM
+
+Building the example:
+---------------------
+To build this example, you will need the QP/C++ framework installed on your computer and the GNU-GCC compiler, which you can get by installing the QP-bundle from:
+
+https://www.state-machine.com/#Downloads
+
+Running the example:
+--------------------
+This example is a simple console application, which you can run from a terminal.
+
+For more QM examples for QP/C++ see:
+https://www.state-machine.com/qpcpp/exa.html</documentation>
+ <framework name="qpcpp"/>
+ <package name="AOs" stereotype="0x02">
+  <class name="ButtonPressHandler" superclass="qpcpp::QActive">
+   <attribute name="m_timeEvt" type="QP::QTimeEvt" visibility="0x02" properties="0x00"/>
+   <attribute name="init" type="ButtonPressHandlerInit_t" visibility="0x00" properties="0x00"/>
+   <operation name="ButtonPressHandler" type="" visibility="0x00" properties="0x00">
+    <documentation>constructor</documentation>
+    <parameter name="_init" type="ButtonPressHandlerInit_t"/>
+    <code>  : QActive(Q_STATE_CAST(&amp;ButtonPressHandler::initial)),
+    m_timeEvt(this, TIMEOUT_SIG, 0U),
+    init(_init)
+</code>
+   </operation>
+   <operation name="ButtonEvent" type="void" visibility="0x00" properties="0x00">
+    <parameter name="sender" type="QP::QActive*"/>
+    <parameter name="level" type="std::uint8_t"/>
+    <code>if(level)
+{
+    QP::QEvt *evt = Q_NEW(QP::QEvt, BTN_PRESS_UP_SIG);
+    this-&gt;POST(evt, sender);
+}
+else
+{
+    QP::QEvt *evt = Q_NEW(QP::QEvt, BTN_PRESS_DOWN_SIG);
+    this-&gt;POST(evt, sender);
+}
+</code>
+   </operation>
+   <statechart properties="0x02">
+    <initial target="../1/0">
+     <action>
+(void)e; // unused parameter</action>
+     <initial_glyph conn="2,3,5,1,20,9,-4">
+      <action box="0,-2,6,2"/>
+     </initial_glyph>
+    </initial>
+    <state name="buttonSensitiveState">
+     <state name="idle">
+      <entry>TRACE_BUTTON_PRESS_HANDLER(&quot;Idle&quot;);
+m_timeEvt.disarm();</entry>
+      <tran trig="BTN_PRESS_DOWN" target="../../1">
+       <action>// arm the private time event to expire in 1/2s
+// and periodically every 1/2 second
+m_timeEvt.armX( BSP::TICKS_PER_SEC,
+                0);</action>
+       <tran_glyph conn="18,19,1,1,4,9,-4">
+        <action box="-15,-2,16,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="2,10,16,12">
+       <entry box="1,2,12,4"/>
+      </state_glyph>
+     </state>
+     <state name="firstPress">
+      <entry>TRACE_BUTTON_PRESS_HANDLER(&quot;PressBegin&quot;);</entry>
+      <tran trig="TIMEOUT" target="../../2">
+       <action>TRACE_BUTTON_PRESS_HANDLER(&quot;ShortPressTimeout&quot;);</action>
+       <tran_glyph conn="18,36,1,3,10,-10,7">
+        <action box="-7,-2,8,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="BTN_PRESS_UP" target="../../0">
+       <action>TRACE_BUTTON_PRESS_HANDLER(&quot;ShortPress&quot;);</action>
+       <tran_glyph conn="18,33,1,1,7,-16,-7">
+        <action box="-12,-2,15,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="2,26,16,13">
+       <entry box="1,2,12,4"/>
+      </state_glyph>
+     </state>
+     <state name="longPress">
+      <entry>TRACE_BUTTON_PRESS_HANDLER(&quot;LongPress&quot;);</entry>
+      <tran trig="BTN_PRESS_UP" target="../../0">
+       <action>TRACE_BUTTON_PRESS_HANDLER(&quot;LongPressRelease&quot;);</action>
+       <tran_glyph conn="35,23,3,1,-7,-8,-10">
+        <action box="0,-2,15,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="35,15,23,16">
+       <entry box="1,2,6,2"/>
+      </state_glyph>
+     </state>
+     <state_glyph node="1,4,59,42"/>
+    </state>
+    <state_diagram size="72,46"/>
+   </statechart>
+  </class>
+ </package>
+ <directory name=".">
+  <file name="AO_ButtonPressHandler.cpp">
+   <text>
+#include &quot;AO_ButtonPressHandler.hpp&quot;
+#include &quot;Modules.h&quot;
+#include &quot;BSP_DebugTrace.h&quot;
+
+using namespace QP;
+// use app as ao namespace
+using namespace APP;
+
+
+
+// opaque pointer to the Blinky active object --------------------------------
+$define${AOs::ButtonPressHandler}
+</text>
+  </file>
+  <file name="AO_ButtonPressHandler.hpp">
+   <text>#ifndef AO_BUTTONHANDLER_H
+#define AO_BUTTONHANDLER_H
+#include &quot;LedHandler.hpp&quot;
+#include &quot;qpcpp.hpp&quot; // QP/C++ framework API
+#include &quot;Signals.hpp&quot;
+#include &quot;BSP_QP.hpp&quot;
+
+///@brief init struct for button blink AO
+typedef struct ButtonPressHandlerInit_t
+{
+    MCAL::iGpio* pin;
+}ButtonPressHandlerInit_t;
+// ask QM to declare the Blinky class ----------------------------------------
+$declare${AOs::ButtonPressHandler}
+
+
+#endif // BSP_HPP</text>
+  </file>
+ </directory>
+</model>

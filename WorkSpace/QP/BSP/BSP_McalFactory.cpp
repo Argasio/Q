@@ -35,6 +35,15 @@ MCAL::iGpio* MCalGetGpio(Gpios gpio)
 
 			break;
 		}
+		case Btn_Usr:
+		{
+			init.port = USER_BUTTON_GPIO_Port;
+			init.pin = USER_BUTTON_Pin;
+
+			static MCAL::Gpio btn(init);
+			ret = &btn;
+			break;
+		}
 	}
 	return ret;
 }

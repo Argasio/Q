@@ -61,7 +61,7 @@ static volatile uint8_t dumpFlag = TRACER_DUMP_INACTIVE;
  * @brief this function replaces the putchat function used by printf and redirects it to the trace hardware
  */
 #if TRACER_OUTPUT_CHANNEL == TRACER_USE_SWO
-
+extern "C"{
 int __io_putchar(int ch)
 {
     // Write character to ITM ch.0
@@ -79,7 +79,7 @@ int _write(int file, char *data, int len)
    // return # of bytes written - as best we can tell
    return len;
 }
-
+}
 
 
 #endif
@@ -441,6 +441,19 @@ uint32_t TracerPrintGeneral(int32_t labelIndex, bool timeStampEnable,  const cha
     QS_BEGIN_ID(QS_MODULES_START+labelIndex, 0U)
     QS_STR(reinterpret_cast<const char*>(traceMsg.buffer));
     QS_END()
+    if(labelIndex>0
+       && (traceMsg.len+ sizeof(TRACER_LABEL_TABLE[0]))<sizeof(traceMsg.buffer))
+    {
+
+    	char* lbl = &TRACER_LABEL_TABLE[labelIndex][0];
+    	uint32_t lblLen = strlen(lbl);
+    	if(lblLen>0){
+    		memmove(&traceMsg.buffer[lblLen+1],traceMsg.buffer, printedChars );
+    		traceMsg.buffer[lblLen] = ' ';
+    		memcpy(traceMsg.buffer, lbl, lblLen);
+    		traceMsg.len += lblLen+1;
+    	}
+    }
 #endif
 
     va_end(args_2);

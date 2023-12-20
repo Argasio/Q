@@ -41,6 +41,7 @@ Core/Startup \
 Drivers/STM32H5xx_HAL_Driver/Src \
 MCAL/stm32h5xx \
 Models/ButtonBlink \
+Models/ButtonPressHandler \
 ThirdParty/qpcpp/ports/arm-cm/qk/gnu \
 ThirdParty/qpcpp/src/qf \
 ThirdParty/qpcpp/src/qk \

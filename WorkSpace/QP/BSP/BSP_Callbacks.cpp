@@ -7,18 +7,8 @@
 
 #include "BSP_Peripheral_Handles.h"
 #include "BSP_QP.hpp"
-
-/**
-  * @brief  EXTI line rising detection callback.
-  * @param  GPIO_Pin: Specifies the port pin connected to corresponding EXTI line.
-  * @retval None
-  */
-extern "C" void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(GPIO_Pin);
-
-}
+#include "BSP_AoFactory.hpp"
+#include "Signals.hpp"
 
 /**
   * @brief Tx Transfer completed callback.
@@ -69,3 +59,45 @@ extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
             the HAL_UART_TxCpltCallback can be implemented in the user file.
    */
 }
+
+/**
+  * @brief  EXTI line rising detection callback.
+  * @param  GPIO_Pin: Specifies the port pin connected to corresponding EXTI line.
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
+{
+  QK_ISR_ENTRY();
+  if(GPIO_Pin == USER_BUTTON_Pin)
+  {
+
+      AO_GetButtonPressHandler()->ButtonEvent(nullptr, 0);
+  }
+
+  /* NOTE: This function should not be modified, when the callback is needed,
+           the HAL_GPIO_EXTI_Rising_Callback could be implemented in the user file
+   */
+  QK_ISR_EXIT();
+}
+
+/**
+  * @brief  EXTI line rising detection callback.
+  * @param  GPIO_Pin: Specifies the port pin connected to corresponding EXTI line.
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
+{
+  QK_ISR_ENTRY();
+  if(GPIO_Pin == USER_BUTTON_Pin)
+  {
+
+      AO_GetButtonPressHandler()->ButtonEvent(nullptr, 1);
+  }
+
+  /* NOTE: This function should not be modified, when the callback is needed,
+           the HAL_GPIO_EXTI_Rising_Callback could be implemented in the user file
+   */
+  QK_ISR_EXIT();
+}
+
+

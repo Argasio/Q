@@ -51,6 +51,7 @@
 
 
 #define TRACE_BUTTON_BLINK(format, ...) TRACE_MODULE(MODULE_BUTTON_BLINK,format,  ##__VA_ARGS__)
+#define TRACE_BUTTON_PRESS_HANDLER(format, ...) TRACE_MODULE(MODULE_BUTTON_PRESS_HANDLER,format,  ##__VA_ARGS__)
 
 
 #endif /* BSP_DEBUGTRACE_H_ */
