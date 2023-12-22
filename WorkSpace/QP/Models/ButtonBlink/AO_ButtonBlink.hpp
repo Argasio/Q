@@ -41,20 +41,37 @@ typedef struct ButtonBlinkInit_t
     APP::LedHandler* ledHandler;
 }ButtonBlinkInit_t;
 // ask QM to declare the Blinky class ----------------------------------------
+//$declare${AOs::ChangeModeEvt} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+//${AOs::ChangeModeEvt} ......................................................
+class ChangeModeEvt : public QP::QEvt {
+public:
+    APP::LedHandler::Colors_t color;
+
+public:
+    ChangeModeEvt(
+        APP::LedHandler::Colors_t _color,
+        QP::QSignal sig);
+}; // class ChangeModeEvt
+//$enddecl${AOs::ChangeModeEvt} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //$declare${AOs::ButtonBlink} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${AOs::ButtonBlink} ........................................................
 class ButtonBlink : public QP::QActive {
 private:
     QP::QTimeEvt m_timeEvt;
-    APP::LedHandler* ledHandler;
     ButtonBlinkInit_t init;
+    APP::LedHandler::Colors_t color= APP::LedHandler::Red;
 
 public:
     ButtonBlink(ButtonBlinkInit_t& _init);
+    void ChangeMode(
+        APP::LedHandler::Colors_t color,
+        QP::QActive* caller);
 
 protected:
     Q_STATE_DECL(initial);
+    Q_STATE_DECL(buttonSensitiveState);
     Q_STATE_DECL(off);
     Q_STATE_DECL(on);
 }; // class ButtonBlink

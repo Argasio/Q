@@ -47,6 +47,17 @@ using namespace APP;
 #endif
 //$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+//$define${AOs::ChangeModeEvt} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+//${AOs::ChangeModeEvt} ......................................................
+
+//${AOs::ChangeModeEvt::ChangeModeEvt} .......................................
+ChangeModeEvt::ChangeModeEvt(
+    APP::LedHandler::Colors_t _color,
+    QP::QSignal sig)
+: QEvt(sig),color(_color)
+{}
+//$enddef${AOs::ChangeModeEvt} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //$define${AOs::ButtonBlink} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${AOs::ButtonBlink} ........................................................
@@ -59,6 +70,16 @@ ButtonBlink::ButtonBlink(ButtonBlinkInit_t& _init)
 
 {}
 
+//${AOs::ButtonBlink::ChangeMode} ............................................
+void ButtonBlink::ChangeMode(
+    APP::LedHandler::Colors_t color,
+    QP::QActive* caller)
+{
+    ChangeModeEvt *evt = Q_NEW(ChangeModeEvt, CHANGE_MODE_SIG);
+    evt->color = color;
+    this->POST(evt,caller);
+}
+
 //${AOs::ButtonBlink::SM} ....................................................
 Q_STATE_DEF(ButtonBlink, initial) {
     //${AOs::ButtonBlink::SM::initial}
@@ -68,26 +89,34 @@ Q_STATE_DEF(ButtonBlink, initial) {
                     BSP::TICKS_PER_SEC);
     (void)e; // unused parameter
 
+    QS_FUN_DICTIONARY(&ButtonBlink::buttonSensitiveState);
     QS_FUN_DICTIONARY(&ButtonBlink::off);
     QS_FUN_DICTIONARY(&ButtonBlink::on);
 
     return tran(&off);
 }
 
-//${AOs::ButtonBlink::SM::off} ...............................................
-Q_STATE_DEF(ButtonBlink, off) {
+//${AOs::ButtonBlink::SM::buttonSensitiveState} ..............................
+Q_STATE_DEF(ButtonBlink, buttonSensitiveState) {
     QP::QState status_;
     switch (e->sig) {
-        //${AOs::ButtonBlink::SM::off}
-        case Q_ENTRY_SIG: {
-            TRACE_BUTTON_BLINK("EnterOff");
-            init.ledHandler->LedControl(LedHandler::Colors_t::Red, 0);
+        //${AOs::ButtonBlink::SM::buttonSensitiveS~::CHANGE_MODE}
+        case CHANGE_MODE_SIG: {
+            const ChangeModeEvt* _evt = Q_EVT_CAST(ChangeModeEvt);
+            if(_evt->color == APP::LedHandler::Red)
+            {
+                TRACE_BUTTON_BLINK("Red");
+                color = APP::LedHandler::Red;
+                init.ledHandler->LedControl(APP::LedHandler::Green, 0);
+            }
+            else if(_evt->color == APP::LedHandler::Green)
+            {
+                TRACE_BUTTON_BLINK("Green");
+                color = APP::LedHandler::Green;
+                init.ledHandler->LedControl(APP::LedHandler::Red, 0);
+            }
+
             status_ = Q_RET_HANDLED;
-            break;
-        }
-        //${AOs::ButtonBlink::SM::off::TIMEOUT}
-        case TIMEOUT_SIG: {
-            status_ = tran(&on);
             break;
         }
         default: {
@@ -98,28 +127,53 @@ Q_STATE_DEF(ButtonBlink, off) {
     return status_;
 }
 
-//${AOs::ButtonBlink::SM::on} ................................................
-Q_STATE_DEF(ButtonBlink, on) {
+//${AOs::ButtonBlink::SM::buttonSensitiveS~::off} ............................
+Q_STATE_DEF(ButtonBlink, off) {
     QP::QState status_;
     switch (e->sig) {
-        //${AOs::ButtonBlink::SM::on}
+        //${AOs::ButtonBlink::SM::buttonSensitiveS~::off}
         case Q_ENTRY_SIG: {
-            TRACE("EnterOn");
-            init.ledHandler->LedControl(LedHandler::Colors_t::Red, 1);
+            TRACE_BUTTON_BLINK("EnterOff");
+            init.ledHandler->LedControl(color, 0);
             status_ = Q_RET_HANDLED;
             break;
         }
-        //${AOs::ButtonBlink::SM::on::TIMEOUT}
+        //${AOs::ButtonBlink::SM::buttonSensitiveS~::off::TIMEOUT}
+        case TIMEOUT_SIG: {
+            status_ = tran(&on);
+            break;
+        }
+        default: {
+            status_ = super(&buttonSensitiveState);
+            break;
+        }
+    }
+    return status_;
+}
+
+//${AOs::ButtonBlink::SM::buttonSensitiveS~::on} .............................
+Q_STATE_DEF(ButtonBlink, on) {
+    QP::QState status_;
+    switch (e->sig) {
+        //${AOs::ButtonBlink::SM::buttonSensitiveS~::on}
+        case Q_ENTRY_SIG: {
+            TRACE("EnterOn");
+            init.ledHandler->LedControl(color, 1);
+            status_ = Q_RET_HANDLED;
+            break;
+        }
+        //${AOs::ButtonBlink::SM::buttonSensitiveS~::on::TIMEOUT}
         case TIMEOUT_SIG: {
             status_ = tran(&off);
             break;
         }
         default: {
-            status_ = super(&top);
+            status_ = super(&buttonSensitiveState);
             break;
         }
     }
     return status_;
 }
 //$enddef${AOs::ButtonBlink} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 

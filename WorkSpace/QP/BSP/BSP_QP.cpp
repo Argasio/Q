@@ -26,7 +26,11 @@ static QP::QSTimeCtr QS_tickTime_;
 static QP::QSTimeCtr QS_tickPeriod_;
 static volatile uint8_t QS_txInProgressFlag = 0;
 
-
+#define QP_AWARE_IRQ_PRIO_LOW QF_AWARE_ISR_CMSIS_PRI+4
+#define QP_AWARE_IRQ_PRIO_MEDIUM QF_AWARE_ISR_CMSIS_PRI+3
+#define QP_AWARE_IRQ_PRIO_MEDIUM_HIGH QF_AWARE_ISR_CMSIS_PRI+2
+#define QP_AWARE_IRQ_PRIO_HIGH QF_AWARE_ISR_CMSIS_PRI+1
+#define QP_AWARE_IRQ_PRIO_HIGHEST QF_AWARE_ISR_CMSIS_PRI
 
 inline void produceSigDict() {
 
@@ -115,6 +119,7 @@ void QS_Init()
 
 	QS_OBJ_DICTIONARY(&l_SysTick_Handler);
 	QS_USR_DICTIONARY(QS_MODULE_BUTTON_BLINK);
+	QS_USR_DICTIONARY(QS_MODULE_BUTTON_PRESS_HANDLER);
 
 	produceSigDict();
 
@@ -170,16 +175,18 @@ namespace QP {
  */
 void QF::onStartup() {
     // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
-    SysTick_Config(SystemCoreClock / BSP::TICKS_PER_SEC);
+    SysTick_Config(SystemCoreClock / BSP::TICKS_PER_SEC); // this enables the systick (NVIC_EnableIRQ(SysTick_IRQn))
 
     // assing all priority bits for preemption-prio. and none to sub-prio.
     NVIC_SetPriorityGrouping(0U);
 
     // set priorities of ALL ISRs used in the system, see NOTE00
-    NVIC_SetPriority(SysTick_IRQn,  QF_AWARE_ISR_CMSIS_PRI);
-    NVIC_SetPriority(USART3_IRQn,  QF_AWARE_ISR_CMSIS_PRI);
+    NVIC_SetPriority(SysTick_IRQn,  QP_AWARE_IRQ_PRIO_MEDIUM);
+    NVIC_SetPriority(USART3_IRQn,  QP_AWARE_IRQ_PRIO_MEDIUM);
+    NVIC_SetPriority(EXTI13_IRQn,  QP_AWARE_IRQ_PRIO_MEDIUM);
     // ...
     NVIC_EnableIRQ(USART3_IRQn);
+    NVIC_EnableIRQ(EXTI13_IRQn);
 }
 //............................................................................
 /**

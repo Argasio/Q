@@ -35,6 +35,14 @@
 #include "Signals.hpp"
 #include "BSP_QP.hpp"
 
+enum AO_ButtonPressHandlerEvt_t
+{
+    ShortPress,
+    LongPress,
+
+};
+// Callbacks
+void AO_ButtonPressHandlerCallback(AO_ButtonPressHandlerEvt_t evt, QP::QActive* caller);
 ///@brief init struct for button blink AO
 typedef struct ButtonPressHandlerInit_t
 {

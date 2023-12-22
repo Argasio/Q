@@ -22,6 +22,7 @@ enum Signals :QP::QSignal
 	TIMEOUT_SIG,
 	BTN_PRESS_UP_SIG,
 	BTN_PRESS_DOWN_SIG,
+	CHANGE_MODE_SIG,
     MAX_SIG       // the last signal
 };
 

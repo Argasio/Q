@@ -87,7 +87,8 @@ m_timeEvt.armX( BSP::TICKS_PER_SEC,
        </tran_glyph>
       </tran>
       <tran trig="BTN_PRESS_UP" target="../../0">
-       <action>TRACE_BUTTON_PRESS_HANDLER(&quot;ShortPress&quot;);</action>
+       <action>TRACE_BUTTON_PRESS_HANDLER(&quot;ShortPress&quot;);
+AO_ButtonPressHandlerCallback(ShortPress, this);</action>
        <tran_glyph conn="18,33,1,1,7,-16,-7">
         <action box="-12,-2,15,2"/>
        </tran_glyph>
@@ -99,7 +100,8 @@ m_timeEvt.armX( BSP::TICKS_PER_SEC,
      <state name="longPress">
       <entry>TRACE_BUTTON_PRESS_HANDLER(&quot;LongPress&quot;);</entry>
       <tran trig="BTN_PRESS_UP" target="../../0">
-       <action>TRACE_BUTTON_PRESS_HANDLER(&quot;LongPressRelease&quot;);</action>
+       <action>TRACE_BUTTON_PRESS_HANDLER(&quot;LongPressRelease&quot;);
+AO_ButtonPressHandlerCallback(LongPress, this);</action>
        <tran_glyph conn="35,23,3,1,-7,-8,-10">
         <action box="0,-2,15,2"/>
        </tran_glyph>
@@ -129,7 +131,8 @@ using namespace APP;
 
 // opaque pointer to the Blinky active object --------------------------------
 $define${AOs::ButtonPressHandler}
-</text>
+// weak callbacks
+__attribute__((__weak__)) void AO_ButtonPressHandlerCallback(AO_ButtonPressHandlerEvt_t evt, QP::QActive* caller){}</text>
   </file>
   <file name="AO_ButtonPressHandler.hpp">
    <text>#ifndef AO_BUTTONHANDLER_H
@@ -139,6 +142,14 @@ $define${AOs::ButtonPressHandler}
 #include &quot;Signals.hpp&quot;
 #include &quot;BSP_QP.hpp&quot;
 
+enum AO_ButtonPressHandlerEvt_t
+{
+    ShortPress,
+    LongPress,
+    
+};
+// Callbacks
+void AO_ButtonPressHandlerCallback(AO_ButtonPressHandlerEvt_t evt, QP::QActive* caller);
 ///@brief init struct for button blink AO
 typedef struct ButtonPressHandlerInit_t
 {

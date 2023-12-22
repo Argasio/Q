@@ -150,6 +150,7 @@ Q_STATE_DEF(ButtonPressHandler, firstPress) {
         //${AOs::ButtonPressHandl~::SM::buttonSensitiveS~::firstPress::BTN_PRESS_UP}
         case BTN_PRESS_UP_SIG: {
             TRACE_BUTTON_PRESS_HANDLER("ShortPress");
+            AO_ButtonPressHandlerCallback(ShortPress, this);
             status_ = tran(&idle);
             break;
         }
@@ -174,6 +175,7 @@ Q_STATE_DEF(ButtonPressHandler, longPress) {
         //${AOs::ButtonPressHandl~::SM::buttonSensitiveS~::longPress::BTN_PRESS_UP}
         case BTN_PRESS_UP_SIG: {
             TRACE_BUTTON_PRESS_HANDLER("LongPressRelease");
+            AO_ButtonPressHandlerCallback(LongPress, this);
             status_ = tran(&idle);
             break;
         }
@@ -185,4 +187,5 @@ Q_STATE_DEF(ButtonPressHandler, longPress) {
     return status_;
 }
 //$enddef${AOs::ButtonPressHandler} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+// weak callbacks
+__attribute__((__weak__)) void AO_ButtonPressHandlerCallback(AO_ButtonPressHandlerEvt_t evt, QP::QActive* caller){}
