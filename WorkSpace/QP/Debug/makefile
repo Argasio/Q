@@ -14,7 +14,7 @@ RM := rm -rf
 -include ThirdParty/qpcpp/src/qf/subdir.mk
 -include ThirdParty/qpcpp/ports/arm-cm/qk/gnu/subdir.mk
 -include Models/ButtonPressHandler/subdir.mk
--include Models/ButtonBlink/subdir.mk
+-include Models/Blinker/subdir.mk
 -include MCAL/stm32h5xx/subdir.mk
 -include Drivers/STM32H5xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
@@ -32,6 +32,9 @@ endif
 ifneq ($(strip $(C++_DEPS)),)
 -include $(C++_DEPS)
 endif
+ifneq ($(strip $(CCM_DEPS)),)
+-include $(CCM_DEPS)
+endif
 ifneq ($(strip $(C_UPPER_DEPS)),)
 -include $(C_UPPER_DEPS)
 endif
@@ -43,6 +46,12 @@ ifneq ($(strip $(S_DEPS)),)
 endif
 ifneq ($(strip $(S_UPPER_DEPS)),)
 -include $(S_UPPER_DEPS)
+endif
+ifneq ($(strip $(CXXM_DEPS)),)
+-include $(CXXM_DEPS)
+endif
+ifneq ($(strip $(C++M_DEPS)),)
+-include $(C++M_DEPS)
 endif
 ifneq ($(strip $(C_DEPS)),)
 -include $(C_DEPS)
@@ -80,14 +89,15 @@ QP.list \
 
 
 # All Target
-all: main-build
+all:
+	+@$(MAKE) --no-print-directory main-build && $(MAKE) --no-print-directory post-build
 
 # Main-build Target
 main-build: QP.elf secondary-outputs
 
 # Tool invocations
-QP.elf QP.map: $(OBJS) $(USER_OBJS) C:\Repos\Q\WorkSpace\QP\STM32H563ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "QP.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"C:\Repos\Q\WorkSpace\QP\STM32H563ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="QP.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+QP.elf QP.map: $(OBJS) $(USER_OBJS) C:\Users\Argasio\Documents\GitHub\Q\WorkSpace\QP\STM32H563ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "QP.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"C:\Users\Argasio\Documents\GitHub\Q\WorkSpace\QP\STM32H563ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="QP.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -106,6 +116,10 @@ clean:
 	-$(RM) QP.elf QP.list QP.map default.size.stdout
 	-@echo ' '
 
+post-build:
+	C:\Users\Argasio\Documents\GitHub\Q\WorkSpace\QP\Debug\postbuild.bat
+	-@echo ' '
+
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
 
 fail-specified-linker-script-missing:
@@ -115,6 +129,6 @@ fail-specified-linker-script-missing:
 warn-no-linker-script-specified:
 	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
 
-.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified
+.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified post-build
 
 -include ../makefile.targets

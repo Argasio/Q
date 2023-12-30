@@ -1,1 +1,1 @@
-qspy.exe -c COM21 -b115200
+qspy.exe -c COM9 -b115200

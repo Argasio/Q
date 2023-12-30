@@ -34,4 +34,7 @@
 *.list
 *.cyclo
 *.log
+*.i
+*.ii
 Workspace/.metadata
+Workspace/QP/Debug

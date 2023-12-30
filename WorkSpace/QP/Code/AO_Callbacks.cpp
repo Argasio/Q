@@ -6,20 +6,21 @@
  */
 
 #include "AO_ButtonpressHandler.hpp"
-#include "AO_ButtonBlink.hpp"
+#include "AO_Blinker.hpp"
 #include "Signals.hpp"
 #include "Modules.h"
 #include "BSP_AoFactory.hpp"
 
+using namespace AO;
 void AO_ButtonPressHandlerCallback(AO_ButtonPressHandlerEvt_t evt, QP::QActive* caller)
 {
 	if(LongPress == evt)
 	{
-		AO_GetButtonBlink()->ChangeMode(APP::LedHandler::Red, caller);
+		AO_GetBlinker()->ChangeMode(APP::LedHandler::Red, caller);
 	}
 	else if(ShortPress == evt)
 	{
-		AO_GetButtonBlink()->ChangeMode(APP::LedHandler::Green, caller);
+		AO_GetBlinker()->ChangeMode(APP::LedHandler::Green, caller);
 	}
 }
 

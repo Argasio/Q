@@ -9,17 +9,18 @@
 #include "BSP_AoFactory.hpp"
 #include "BSP_McalFactory.hpp"
 
+using namespace AO;
 //--------------- AO FACTORY ------------------//
-ButtonBlink* AO_GetButtonBlink()
+Blinker* AO_GetBlinker()
 {
-	static ButtonBlink* aoPtr = nullptr;
+	static Blinker* aoPtr = nullptr;
 	if(aoPtr == nullptr)
 	{
 		APP::LedHandler* ledHandler = AppGetLedHandler( );
-		ButtonBlinkInit_t buttonBlinkInit;
-		buttonBlinkInit.ledHandler = ledHandler;
-		static ButtonBlink AO_buttonBlink(buttonBlinkInit);
-		aoPtr = &AO_buttonBlink;
+		BlinkerInit_t BlinkerInit;
+		BlinkerInit.ledHandler = ledHandler;
+		static Blinker AO_Blinker(BlinkerInit);
+		aoPtr = &AO_Blinker;
 	}
 	return aoPtr;
 }

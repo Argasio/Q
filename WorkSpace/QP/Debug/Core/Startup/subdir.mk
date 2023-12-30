@@ -16,7 +16,7 @@ OBJS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 Core/Startup/%.o: ../Core/Startup/%.s Core/Startup/subdir.mk
-	arm-none-eabi-gcc -mcpu=cortex-m33 -g3 -DDEBUG -DQP_CONFIG=1 -c -I"C:/Repos/Q/WorkSpace/QP/ThirdParty/qpcpp/include" -I"C:/Repos/Q/WorkSpace/QP/Models" -I"C:/Repos/Q/WorkSpace/QP/Models/ButtonBlink" -I"C:/Repos/Q/WorkSpace/QP/MCAL" -I"C:/Repos/Q/WorkSpace/QP/MCAL/stm32h5xx" -I"C:/Repos/Q/WorkSpace/QP/APP/TRACER" -I"C:/Repos/Q/WorkSpace/QP/APP" -I"C:/Repos/Q/WorkSpace/QP/Models/ButtonPressHandler" -x assembler-with-cpp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m33 -g3 -DDEBUG -DQP_CONFIG=1 -c -I"C:/Users/Argasio/Documents/GitHub/Q/WorkSpace/QP/ThirdParty/qpcpp/include" -I"C:/Users/Argasio/Documents/GitHub/Q/WorkSpace/QP/Models" -I"C:/Users/Argasio/Documents/GitHub/Q/WorkSpace/QP/Models/ButtonBlink" -I"C:/Users/Argasio/Documents/GitHub/Q/WorkSpace/QP/MCAL" -I"C:/Users/Argasio/Documents/GitHub/Q/WorkSpace/QP/MCAL/stm32h5xx" -I"C:/Users/Argasio/Documents/GitHub/Q/WorkSpace/QP/APP/TRACER" -I"C:/Users/Argasio/Documents/GitHub/Q/WorkSpace/QP/APP" -I"C:/Users/Argasio/Documents/GitHub/Q/WorkSpace/QP/Models/ButtonPressHandler" -x assembler-with-cpp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "$@" "$<"
 
 clean: clean-Core-2f-Startup
 

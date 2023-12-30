@@ -7,11 +7,9 @@
 
 #include "Modules.h"
 
-char Modules_NamesTable[MODULE_MAX][25] =
-{
-		[MODULE_NONE] = "",
-		[MODULE_BUTTON_BLINK] = "MODULE_BTN_BLINK",
-		[MODULE_BUTTON_PRESS_HANDLER] = "MODULE_BTN_PRS_HDLR",
+char Modules_NamesTable[MODULE_MAX][35] ={
+        FOREACH_MODULE(STR_MODULE)
 };
+
 
 
