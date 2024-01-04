@@ -8,8 +8,9 @@
 #ifndef BSP_DEBUGTRACE_H_
 #define BSP_DEBUGTRACE_H_
 #include "BSP_ConditionalCompile.h"
-#include "Qp_Tracer.h"
-#include "TRACER.h"
+
+#include "../COMPONENTS/Qp_Tracer.h"
+#include "../COMPONENTS/TRACER/TRACER.h"
 
 
 #if defined(Q_SPY) && (USE_TRACER)

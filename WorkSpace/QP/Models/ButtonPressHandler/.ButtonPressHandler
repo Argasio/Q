@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<session version="6.1.0">
+<session version="5.3.0">
  <item name="license">GPL</item>
  <group name="locked"/>
  <group name="settings">
@@ -9,9 +9,9 @@
   <item name="backups">0</item>
  </group>
  <group name="windows">
-  <item id="AOs::ButtonPressHandler::SM">0,0,848,311,*</item>
-  <item id=".::AO_ButtonPressHandler.hpp">174,0,674,300</item>
-  <item id=".::AO_ButtonPressHandler.cpp">174,35,674,300</item>
+  <item id="AOs::ButtonPressHandler::SM">0,0,361,390,*</item>
+  <item id=".::AO_ButtonPressHandler.hpp">0,0,674,300</item>
+  <item id=".::AO_ButtonPressHandler.cpp">-478,0,674,300</item>
  </group>
  <group name="search">
   <item name="options">2032128</item>

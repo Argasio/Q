@@ -15,7 +15,8 @@
   * @{
   */
 
-#include "TRACER.h"
+#include "../../COMPONENTS/TRACER/TRACER.h"
+
 #include <BSP_ConditionalCompile.h>
 #if COMPILE_MODULE_TRACER
 #include "string.h"

@@ -8,6 +8,10 @@
 #include "BSP_QP.hpp"
 #include "Main.hpp"
 #include "Modules.h"
+#include "BSP_DebugTrace.h"
+#include <span>
+#include <map>
+
 
 using namespace AO;
 void AO_InitPublishSubscribe()
@@ -69,13 +73,35 @@ void AO_ButtonPressHandlerStart()
 }
 #define NUM 50
 
+void printspan(std::span<int> s)
+{
+    for (const auto& num : s) {
+        TRACE("num = %d", num);
+    }
+}
+
+void increment(std::span<int> s, int b)
+{
+    for (auto& num : s) {
+        num+=b;
+    }
+    printspan(s);
+}
+
+enum class myEnum
+{
+	K = 51,
+	Z = 32,
+};
+
 void start()
 {
-    int num = NUM;
-    (void*)&num;
-    int arr[NUM];
-    arr[NUM+10]+= 50;
+	static int arr[50];
+    static std::span<int> mySpan(arr);
+    increment(mySpan, 50);
 
+    static std::map<myEnum , int > myMap = {{myEnum::K,1},{myEnum::Z,2}};
+    TRACE("n = %d", myMap[myEnum::K]);
     // initialize the framework
     QP::QF::init();
     // init qspy

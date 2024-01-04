@@ -30,10 +30,10 @@
 //$endhead${.::AO_ButtonPressHandler.hpp} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #ifndef AO_BUTTONHANDLER_H
 #define AO_BUTTONHANDLER_H
-#include "LedHandler.hpp"
 #include "qpcpp.hpp" // QP/C++ framework API
 #include "Signals.hpp"
 #include "BSP_QP.hpp"
+#include "../../COMPONENTS/LedHandler.hpp"
 
 enum AO_ButtonPressHandlerEvt_t
 {
